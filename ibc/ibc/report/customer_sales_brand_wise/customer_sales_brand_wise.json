@@ -1,0 +1,61 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2021-06-12 12:57:23.555717",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "IBC",
+ "modified": "2021-06-12 17:31:58.450959",
+ "modified_by": "Administrator",
+ "module": "Ibc",
+ "name": "Customer Sales Brand Wise",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "select\n    `tabBrand`.name as \"Brand::140\",\n    (select \n    sum(`tabSales Invoice Item`.net_amount)\n    from \n    `tabSales Invoice Item` join `tabSales Invoice` on `tabSales Invoice Item`.parent = `tabSales Invoice`.name JOIN `tabSales Person` ON `tabSales Invoice`.sales_person = `tabSales Person`.name\n    where\n    `tabSales Invoice Item`.docstatus = 1 \n    and `tabSales Invoice`.posting_date between %(from_date)s and %(to_date)s \n    and `tabSales Invoice`.customer = %(customer)s \n    and `tabSales Invoice Item`.net_amount>0\n    and `tabSales Invoice Item`.brand = `tabBrand`.name\n    and `tabSales Person`.parent != \"Projects Sales\") as \"Sales:Currency:120\",\n    \n    (select \n    sum(`tabSales Invoice Item`.net_amount)\n    from \n    `tabSales Invoice Item` join `tabSales Invoice` on `tabSales Invoice Item`.parent = `tabSales Invoice`.name JOIN `tabSales Person` ON `tabSales Invoice`.sales_person = `tabSales Person`.name\n    where\n    `tabSales Invoice Item`.docstatus = 1 \n    and `tabSales Invoice`.posting_date between %(from_date)s and %(to_date)s \n    and `tabSales Invoice`.customer = %(customer)s \n    and `tabSales Invoice Item`.net_amount<0\n    and `tabSales Invoice Item`.brand = `tabBrand`.name\n    and `tabSales Person`.parent != \"Projects Sales\") as \"Returns:Currency:120\",\n    \n    (select \n    sum(`tabSales Invoice Item`.net_amount)\n    from \n    `tabSales Invoice Item` join `tabSales Invoice` on `tabSales Invoice Item`.parent = `tabSales Invoice`.name JOIN `tabSales Person` ON `tabSales Invoice`.sales_person = `tabSales Person`.name\n    where\n    `tabSales Invoice Item`.docstatus = 1 \n    and `tabSales Invoice`.posting_date between %(from_date)s and %(to_date)s \n    and `tabSales Invoice`.customer = %(customer)s \n    and `tabSales Invoice Item`.brand = `tabBrand`.name\n    and `tabSales Person`.parent != \"Projects Sales\") as \"Net Amount:Currency:120\"\n    \n    \nfrom \n    `tabBrand`\n",
+ "ref_doctype": "Sales Invoice",
+ "report_name": "Customer Sales Brand Wise",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "POS"
+  },
+  {
+   "role": "Sales Manager"
+  },
+  {
+   "role": "Sales Supervisor"
+  },
+  {
+   "role": "Bank Accountant"
+  },
+  {
+   "role": "Project Engineer"
+  },
+  {
+   "role": "Project Engineer Team leader"
+  },
+  {
+   "role": "Installation Manager"
+  },
+  {
+   "role": "Regional Sales Manager"
+  },
+  {
+   "role": "Item Price Manager"
+  },
+  {
+   "role": "Sales User"
+  }
+ ]
+}

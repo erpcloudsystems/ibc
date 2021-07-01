@@ -14,19 +14,6 @@ def execute(filters=None):
 def get_columns():
 	return [
 		{
-			"label": _("Item"),
-			"fieldname": "item_code",
-			"fieldtype": "Link",
-			"options": "Item",
-			"width": 150
-		},
-		{
-			"label": _("Item Name"),
-			"fieldname": "item_name",
-			"fieldtype": "Data",
-			"width": 150
-		},
-		{
 			"label": _("Brand"),
 			"fieldname": "brand",
 			"fieldtype": "Link",
@@ -34,82 +21,51 @@ def get_columns():
 			"width": 150
 		},
 		{
-			"label": _("Item Group"),
-			"fieldname": "item_group",
-			"fieldtype": "Link",
-			"options": "Item Group",
-			"width": 150
-		},
-		{
 			"label": _("Opening"),
 			"fieldname": "opening",
-			"fieldtype": "Float",
+			"fieldtype": "Currency",
 			"width": 150
 		},
 		{
-			"label": _("Opening_v"),
-			"fieldname": "opening_v",
-			"fieldtype": "Float",
+			"label": _("Purchases"),
+			"fieldname": "purchases",
+			"fieldtype": "Currency",
 			"width": 150
 		},
 		{
-			"label": _("Delivered"),
-			"fieldname": "delivered",
-			"fieldtype": "Float",
+			"label": _("Total In"),
+			"fieldname": "total_in",
+			"fieldtype": "Currency",
 			"width": 150
 		},
 		{
-			"label": _("Delivered_v"),
-			"fieldname": "delivered_v",
-			"fieldtype": "Float",
+			"label": _("Current Value"),
+			"fieldname": "current_value",
+			"fieldtype": "Currency",
 			"width": 150
 		},
 		{
-			"label": _("Sales Return"),
-			"fieldname": "sales_return",
-			"fieldtype": "Float",
+			"label": _("COGS"),
+			"fieldname": "cogs",
+			"fieldtype": "Currency",
 			"width": 150
 		},
 		{
-			"label": _("Sales Return_v"),
-			"fieldname": "sales_return_v",
-			"fieldtype": "Float",
+			"label": _("COGS/Sales Value"),
+			"fieldname": "cogs_sales_value",
+			"fieldtype": "Percent",
 			"width": 150
 		},
 		{
-			"label": _("Purchase"),
-			"fieldname": "purchase",
-			"fieldtype": "Float",
+			"label": _("Added Value/Sales Value"),
+			"fieldname": "added_sales_value",
+			"fieldtype": "Percent",
 			"width": 150
 		},
 		{
-			"label": _("Purchase_v"),
-			"fieldname": "purchase_v",
-			"fieldtype": "Float",
-			"width": 150
-		},
-		{
-			"label": _("Purchase Return"),
-			"fieldname": "purchase_return",
-			"fieldtype": "Float",
-			"width": 150
-		},
-		{
-			"label": _("Purchase Return_v"),
-			"fieldname": "purchase_return_v",
-			"fieldtype": "Float",
-			"width": 150
-		},
-		{
-			"label": _("Balance"),
-			"fieldname": "balance",
-			"fieldtype": "Float",
-			"width": 150
-		},
-		{
-			"label": _("Balance_v"),
-			"fieldname": "balance_v",
-			"fieldtype": "Float",
+			"label": _("Added Value / COGS"),
+			"fieldname": "added_cogs",
+			"fieldtype": "Percent",
 			"width": 150
 		}
 	]
@@ -132,13 +88,12 @@ def get_item_price_qty_data(filters):
     SELECT distinct
 			ifnull(`tabItem`.name,0) as item_code,
 			ifnull(`tabItem`.item_name,0) as item_name,
-			ifnull(`tabItem`.valuation_rate,0) as value,
 			ifnull(`tabItem`.brand,0) as brand,
 			ifnull(`tabItem`.item_group,0) as item_group,
 			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Delivery Note"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as delivered,
-			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Sales Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as sales_return,
-			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase,
-			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase_return
+(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Sales Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as sales_return,
+(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase,
+(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase_return
 			from
 			`tabItem`
 		""", filters , as_dict=1)
@@ -166,12 +121,10 @@ def get_item_price_qty_data(filters):
 			# Start getting all qty
 			s = 0
 			s1 = 0
-			frat = 0
 			for warehouse in warehouses:
 				warehousee = warehouse.name
 				opening = frappe.db.sql("""select
-							qty_after_transaction as res,
-							valuation_rate as frate
+							qty_after_transaction as res
 							from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
 							where
 							`tabStock Ledger Entry`.item_code = %s
@@ -182,8 +135,6 @@ def get_item_price_qty_data(filters):
 										(item, warehousee, from_date), as_dict=1)
 				for tqty in opening:
 					s += tqty.res
-					frat = tqty.frate
-
 				balance = frappe.db.sql("""select
 											qty_after_transaction as res
 											from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
@@ -196,15 +147,8 @@ def get_item_price_qty_data(filters):
 										(item, warehousee, to_date), as_dict=1)
 				for tqty in balance:
 					s1 += tqty.res
-
-			data['delivered_v'] =  (item_dict.delivered *  frat)
-			data['purchase_v'] = (item_dict.purchase * ((item_dict.value + frat) / 2))
-			data['sales_return_v'] = (item_dict.sales_return * ((item_dict.value + frat) / 2))
-			data['purchase_return_v'] = (item_dict.purchase_return * ((item_dict.value + frat) / 2))
 			data['opening'] = s
-			data['opening_v'] = s * frat
 			data['balance'] = s1
-			data['balance_v'] = s1 * item_dict.value
 
 
 			result.append(data)
