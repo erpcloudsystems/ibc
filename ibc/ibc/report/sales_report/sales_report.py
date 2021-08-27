@@ -71,6 +71,12 @@ def get_columns():
 			"width": 60
 		},
 		{
+			"label": _("Disc (%)"),
+			"fieldname": "discount_percentage",
+			"fieldtype": "Percent",
+			"width": 80
+		},
+		{
 			"label": _("Amount"),
 			"fieldname": "amount",
 			"fieldtype": "Currency",
@@ -108,6 +114,7 @@ def get_item_price_qty_data(filters):
 			b.item_name as item_name,
 			b.brand as brand,
 			b.qty as qty,
+			b.discount_percentage as discount_percentage,
 			b.amount as amount
 		from
 		`tabSales Invoice` a JOIN `tabSales Invoice Item` b ON a.name = b.parent JOIN `tabSales Person` ON a.sales_person = `tabSales Person`.name
@@ -138,6 +145,7 @@ def get_item_price_qty_data(filters):
 				'item_name': item_dict.item_name,
 				'brand': item_dict.brand,
 				'qty': item_dict.qty,
+				'discount_percentage': item_dict.discount_percentage,
 				'amount': item_dict.amount
 			}
 			result.append(data)

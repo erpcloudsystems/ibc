@@ -75,19 +75,18 @@ def get_data(filters, columns):
 
 def get_item_price_qty_data(filters):
     conditions = ""
-    conditions1 = ""
-    # vals = [filters.get("metal_ws") , filters.get("leather_ws") , filters.get("natural_ws") , filters.get("artificial_ws") , filters.get("metal_ws") , filters.get("supplier_ws") , filters.get("imported_ws")]
-
+    if filters.get("brand"):
+        conditions += " and `tabItem`.brand=%(brand)s"
     item_results = frappe.db.sql("""
-    SELECT distinct
-			ifnull(`tabItem`.name,0) as item_code,
-			ifnull(`tabItem`.item_name,0) as item_name,
-			ifnull(`tabItem`.brand,0) as brand,
-			ifnull(`tabItem`.valuation_rate,0) as valuation_rate
-			from
-			`tabItem`
-			where tabItem.brand = %(brand)s
-		""", filters, as_dict=1)
+                SELECT distinct
+                    ifnull(`tabItem`.name,0) as item_code,
+                    ifnull(`tabItem`.item_name,0) as item_name,
+                    ifnull(`tabItem`.brand,0) as brand,
+                    ifnull(`tabItem`.valuation_rate,0) as valuation_rate
+                from
+                    `tabItem`
+                where tabItem.brand = %(brand)s
+                """, filters, as_dict=1)
 
     result = []
     if item_results:
@@ -113,14 +112,14 @@ def get_item_price_qty_data(filters):
             for warehouse in warehouses:
                 warehousee = warehouse.name
                 total_qty = frappe.db.sql("""select
-													qty_after_transaction as res
-													from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
-													where
-													`tabStock Ledger Entry`.item_code = %s
-													and `tabStock Ledger Entry`.warehouse = %s
-													and `tabStock Ledger Entry`.posting_date <= %s
-													and `tabStock Ledger Entry`.is_cancelled = 0
-													ORDER BY `tabStock Ledger Entry`.posting_date DESC, `tabStock Ledger Entry`.posting_time DESC , `tabStock Ledger Entry`.creation DESC LIMIT 1""",
+                                                    qty_after_transaction as res
+                                                    from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
+                                                    where
+                                                    `tabStock Ledger Entry`.item_code = %s
+                                                    and `tabStock Ledger Entry`.warehouse = %s
+                                                    and `tabStock Ledger Entry`.posting_date <= %s
+                                                    and `tabStock Ledger Entry`.is_cancelled = 0
+                                                    ORDER BY `tabStock Ledger Entry`.posting_date DESC, `tabStock Ledger Entry`.posting_time DESC , `tabStock Ledger Entry`.creation DESC LIMIT 1""",
                                           (item, warehousee, from_date), as_dict=1)
                 for tqty in total_qty:
                     s += tqty.res

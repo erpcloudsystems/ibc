@@ -51,6 +51,18 @@ def get_columns():
 			"width": 150
 		},
 		{
+			"label": _("Sales Value"),
+			"fieldname": "sales_value",
+			"fieldtype": "Currency",
+			"width": 150
+		},
+		{
+			"label": _("Added Value"),
+			"fieldname": "added_value",
+			"fieldtype": "Currency",
+			"width": 150
+		},
+		{
 			"label": _("COGS/Sales Value"),
 			"fieldname": "cogs_sales_value",
 			"fieldtype": "Percent",
@@ -86,16 +98,9 @@ def get_item_price_qty_data(filters):
 
 	item_results = frappe.db.sql("""
     SELECT distinct
-			ifnull(`tabItem`.name,0) as item_code,
-			ifnull(`tabItem`.item_name,0) as item_name,
-			ifnull(`tabItem`.brand,0) as brand,
-			ifnull(`tabItem`.item_group,0) as item_group,
-			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Delivery Note"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as delivered,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Sales Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as sales_return,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase_return
+			name as name
 			from
-			`tabItem`
+			`tabBrand`
 		""", filters , as_dict=1)
 
 	result = []
@@ -103,52 +108,146 @@ def get_item_price_qty_data(filters):
 		for item_dict in item_results:
 
 			data = {
-				'item_code': item_dict.item_code,
-				'brand': (item_dict.brand),
-				'item_name': (item_dict.item_name),
-				'delivered': (item_dict.delivered),
-				'sales_return': (item_dict.sales_return),
-				'purchase': (item_dict.purchase),
-				'purchase_return': (item_dict.purchase_return),
-				'item_group': (item_dict.item_group)
+				'brand': (item_dict.name),
 			}
 			to_date = filters.get("to_date")
 			from_date = filters.get("from_date")
-			item = item_dict.item_code
-
-			warehouses = frappe.db.sql("""select name as name from `tabWarehouse` where disabled = 0 and summery_stock = 1""", as_dict=1)
+			brands = item_dict.name
 
 			# Start getting all qty
 			s = 0
 			s1 = 0
-			for warehouse in warehouses:
-				warehousee = warehouse.name
-				opening = frappe.db.sql("""select
-							qty_after_transaction as res
-							from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
-							where
-							`tabStock Ledger Entry`.item_code = %s
-							and `tabStock Ledger Entry`.warehouse = %s
-							and `tabStock Ledger Entry`.posting_date < %s
-							and `tabStock Ledger Entry`.is_cancelled = 0
-							ORDER BY `tabStock Ledger Entry`.posting_date DESC, `tabStock Ledger Entry`.posting_time DESC , `tabStock Ledger Entry`.creation DESC LIMIT 1""",
-										(item, warehousee, from_date), as_dict=1)
-				for tqty in opening:
-					s += tqty.res
-				balance = frappe.db.sql("""select
-											qty_after_transaction as res
-											from `tabStock Ledger Entry` join `tabWarehouse` on `tabStock Ledger Entry`.warehouse = `tabWarehouse`.name
-											where
-											`tabStock Ledger Entry`.item_code = %s
-											and `tabStock Ledger Entry`.warehouse = %s
-											and `tabStock Ledger Entry`.posting_date <= %s
-											and `tabStock Ledger Entry`.is_cancelled = 0
-											ORDER BY `tabStock Ledger Entry`.posting_date DESC, `tabStock Ledger Entry`.posting_time DESC , `tabStock Ledger Entry`.creation DESC LIMIT 1""",
-										(item, warehousee, to_date), as_dict=1)
-				for tqty in balance:
-					s1 += tqty.res
+			s2 = 0
+
+
+			#///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			opening = frappe.db.sql("""select
+									ifnull(sum(stock_value_difference),0) as res
+									from `tabStock Ledger Entry` 
+									where
+									`tabStock Ledger Entry`.brand =%s
+									and `tabStock Ledger Entry`.posting_date < %s
+									and `tabStock Ledger Entry`.is_cancelled = 0
+									""",
+									(brands, from_date), as_dict=1)
+			for tqty in opening:
+				s += tqty.res
 			data['opening'] = s
-			data['balance'] = s1
+
+			# ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			purchase = frappe.db.sql("""select
+									ifnull(sum(stock_value_difference),0) as res
+									from `tabStock Ledger Entry` 
+									where
+									voucher_type = "Purchase Invoice"
+									and `tabStock Ledger Entry`.brand =%s
+									and `tabStock Ledger Entry`.posting_date between %s and %s
+									and `tabStock Ledger Entry`.is_cancelled = 0
+									""",
+									(brands, from_date, to_date), as_dict=1)
+			for tqty in purchase:
+				s1 += tqty.res
+			data['purchases'] = s1
+
+			# ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			totalin = s + s1
+			data['total_in'] = totalin
+
+			# ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			cur_val = frappe.db.sql("""select
+									ifnull(sum(stock_value_difference),0) as res
+									from `tabStock Ledger Entry` 
+									where
+									`tabStock Ledger Entry`.brand =%s
+									and `tabStock Ledger Entry`.posting_date <= %s
+									and `tabStock Ledger Entry`.is_cancelled = 0
+									""",
+									 (brands, to_date), as_dict=1)
+			for tqty in cur_val:
+				s2 += tqty.res
+			data['current_value'] = s2
+			# ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			cogsdn=0
+			cogsinv=0
+			cogs_dn = frappe.db.sql("""select
+									ifnull(sum(stock_value_difference),0) as res
+									from `tabStock Ledger Entry` 
+									where
+									voucher_type = "Delivery Note"
+									and `tabStock Ledger Entry`.brand =%s
+									and `tabStock Ledger Entry`.posting_date between %s and %s
+									and `tabStock Ledger Entry`.is_cancelled = 0
+														""",
+									(brands, from_date, to_date), as_dict=1)
+			for tqty in cogs_dn:
+				cogsdn += tqty.res
+
+			cogs_inv = frappe.db.sql("""select
+									ifnull(sum(stock_value_difference),0) as res
+									from `tabStock Ledger Entry` 
+									where
+									voucher_type = "Sales Invoice"
+									and actual_qty >0
+									and `tabStock Ledger Entry`.brand =%s
+									and `tabStock Ledger Entry`.posting_date between %s and %s
+									and `tabStock Ledger Entry`.is_cancelled = 0
+														""",
+									(brands, from_date, to_date), as_dict=1)
+			for tqty in cogs_inv:
+				cogsinv += tqty.res
+
+			cogsss = cogsdn + cogsinv
+
+			data['cogs'] = cogsss
+
+			# ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			sinv = 0
+			ssinv = frappe.db.sql("""select
+									ifnull(sum(net_amount),0) as res
+									from `tabSales Invoice Item` join `tabSales Invoice` on  `tabSales Invoice Item`.parent = `tabSales Invoice`.name
+									where
+									`tabSales Invoice Item`.brand =%s
+									and `tabSales Invoice`.posting_date between %s and %s
+									and `tabSales Invoice`.docstatus = 1
+															""",
+									(brands, from_date, to_date), as_dict=1)
+			for tqty in ssinv:
+				sinv += tqty.res
+
+			data['sales_value'] = sinv
+
+			addedv = sinv + cogsss
+
+			if cogsss != 0 and sinv !=0:
+				cogs_sales_value = ((cogsss*(-1)) / sinv)*100
+				data['cogs_sales_value'] = cogs_sales_value
+			else:
+				data['cogs_sales_value'] = 0
+
+			if addedv != 0 and sinv !=0:
+				added_sales_value = addedv / sinv * 100
+				data['added_sales_value'] = added_sales_value
+			else:
+				data['added_sales_value'] = 0
+
+
+			if cogsss != 0 and addedv !=0:
+				added_cogs_value = addedv / cogsss * 100
+				data['added_cogs'] = added_cogs_value
+			else:
+				data['added_cogs']  = 0
+
+			#added_sales_value = addedv / sinv
+			#added_cogs_value = addedv / cogsdn
+
+			data['added_value'] = addedv
+
+			#data['added_sales_value'] = added_sales_value
+			#data['added_cogs'] = added_cogs_value
+
+
+
+
 
 
 			result.append(data)

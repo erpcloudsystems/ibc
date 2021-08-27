@@ -98,10 +98,42 @@ def get_item_price_qty_data(filters):
 			ifnull(`tabItem`.item_name,0) as item_name,
 			ifnull(`tabItem`.brand,0) as brand,
 			ifnull(`tabItem`.item_group,0) as item_group,
-			(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Delivery Note"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as delivered,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Sales Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as sales_return,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty >0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase,
-(ifnull((select sum(actual_qty) from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse where `tabWarehouse`.summery_stock = 1 and `tabStock Ledger Entry`.item_code = `tabItem`.item_code and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  and `tabStock Ledger Entry`.posting_date >= %(from_date)s and `tabStock Ledger Entry`.posting_date <= %(to_date)s and `tabStock Ledger Entry`.actual_qty <0 and `tabStock Ledger Entry`.docstatus = 1),0)) as purchase_return
+			(ifnull((select sum(actual_qty) 
+				from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse 
+				where `tabWarehouse`.summery_stock = 1 
+				and `tabStock Ledger Entry`.item_code = `tabItem`.item_code 
+				and `tabStock Ledger Entry`.voucher_type = "Delivery Note"  
+				and `tabStock Ledger Entry`.posting_date >= %(from_date)s 
+				and `tabStock Ledger Entry`.posting_date <= %(to_date)s 
+				and `tabStock Ledger Entry`.actual_qty <0 
+				and `tabStock Ledger Entry`.is_cancelled = 0),0)) as delivered,
+			(ifnull((select sum(actual_qty) 
+				from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse 
+				where `tabWarehouse`.summery_stock = 1 
+				and `tabStock Ledger Entry`.item_code = `tabItem`.item_code 
+				and `tabStock Ledger Entry`.voucher_type = "Sales Invoice"  
+				and `tabStock Ledger Entry`.posting_date >= %(from_date)s 
+				and `tabStock Ledger Entry`.posting_date <= %(to_date)s 
+				and `tabStock Ledger Entry`.actual_qty >0 
+				and `tabStock Ledger Entry`.is_cancelled = 0),0)) as sales_return,
+			(ifnull((select sum(actual_qty) 
+				from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse 
+				where `tabWarehouse`.summery_stock = 1 
+				and `tabStock Ledger Entry`.item_code = `tabItem`.item_code 
+				and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  
+				and `tabStock Ledger Entry`.posting_date >= %(from_date)s 
+				and `tabStock Ledger Entry`.posting_date <= %(to_date)s 
+				and `tabStock Ledger Entry`.actual_qty >0 
+				and `tabStock Ledger Entry`.is_cancelled = 0),0)) as purchase,
+			(ifnull((select sum(actual_qty) 
+				from `tabStock Ledger Entry` left join `tabWarehouse` on `tabWarehouse`.name = `tabStock Ledger Entry`.warehouse 
+				where `tabWarehouse`.summery_stock = 1 
+				and `tabStock Ledger Entry`.item_code = `tabItem`.item_code 
+				and `tabStock Ledger Entry`.voucher_type = "Purchase Invoice"  
+				and `tabStock Ledger Entry`.posting_date >= %(from_date)s 
+				and `tabStock Ledger Entry`.posting_date <= %(to_date)s 
+				and `tabStock Ledger Entry`.actual_qty <0 
+				and `tabStock Ledger Entry`.is_cancelled = 0),0)) as purchase_return
 			from
 			`tabItem`
 		""", filters , as_dict=1)

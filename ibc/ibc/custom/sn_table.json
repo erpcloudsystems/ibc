@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "SN Table",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2021-07-24 17:16:02.546928",
+   "default_value": null,
+   "doc_type": "SN Table",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "delivery_date",
+   "idx": 0,
+   "modified": "2021-07-24 17:16:02.546928",
+   "modified_by": "Administrator",
+   "name": "SN Table-delivery_date-default",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "default",
+   "property_type": "Text",
+   "row_name": null,
+   "value": "Today"
+  }
+ ],
+ "sync_on_migrate": 1
+}
