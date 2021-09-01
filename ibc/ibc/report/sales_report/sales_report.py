@@ -1,3 +1,5 @@
+
+
 # Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 from __future__ import unicode_literals
@@ -102,7 +104,7 @@ def get_item_price_qty_data(filters):
 	if filters.get("sales_person"):
 		conditions += " and a.sales_person=%(sales_person)s"
 	if filters.get("without_service_items"):
-		conditions += " and b.is_stock_item = 1"
+		conditions += " and b.is_stock_item = 1 or (b.is_stock_item = 0 and b.item_group = 'Latest Offers') "
 	item_results = frappe.db.sql("""
 		select
 			a.name as sales_invoice,
