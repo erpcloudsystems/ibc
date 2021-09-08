@@ -104,27 +104,27 @@ def get_item_price_qty_data(filters):
 	if filters.get("sales_person"):
 		conditions += " and a.sales_person=%(sales_person)s"
 	if filters.get("without_service_items"):
-		conditions += " and b.is_stock_item = 1 or (b.is_stock_item = 0 and b.item_group = 'Latest Offers') "
+		conditions += " and b.item_group not in  ('2-Service','ID Printed','Maintenance contracts','Services1') "
 	item_results = frappe.db.sql("""
-		select
-			a.name as sales_invoice,
-			a.customer_name as customer,
-			a.posting_date as posting_date,
-			a.territory as territory,
-			a.sales_person as sales_person,
-			b.item_code as item_code,
-			b.item_name as item_name,
-			b.brand as brand,
-			b.qty as qty,
-			b.discount_percentage as discount_percentage,
-			b.amount as amount
-		from
-		`tabSales Invoice` a JOIN `tabSales Invoice Item` b ON a.name = b.parent JOIN `tabSales Person` ON a.sales_person = `tabSales Person`.name
-		where
-		 a.docstatus =1
-		 and `tabSales Person`.parent != "Projects Sales"
-			{conditions}
-		"""
+									select
+										a.name as sales_invoice,
+										a.customer_name as customer,
+										a.posting_date as posting_date,
+										a.territory as territory,
+										a.sales_person as sales_person,
+										b.item_code as item_code,
+										b.item_name as item_name,
+										b.brand as brand,
+										b.qty as qty,
+										b.discount_percentage as discount_percentage,
+										b.amount as amount
+									from
+									`tabSales Invoice` a JOIN `tabSales Invoice Item` b ON a.name = b.parent JOIN `tabSales Person` ON a.sales_person = `tabSales Person`.name
+									where
+									 a.docstatus =1
+									 and `tabSales Person`.parent != "Projects Sales"
+										{conditions}
+								"""
 		.format(conditions=conditions), filters, as_dict=1)
 
 
