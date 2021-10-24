@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["New Stocks Brand"] = {
+frappe.query_reports["New Stocks Brand 2021"] = {
 	"filters": [
 		{
 			"fieldname":"from_date",
