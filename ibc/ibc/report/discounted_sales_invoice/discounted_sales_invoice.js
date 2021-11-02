@@ -20,7 +20,7 @@ frappe.query_reports["Discounted Sales invoice"] = {
 		},
 		{
 			fieldname:"brand",
-			reqd: 1,
+			reqd: 0,
 			label: __("Brand"),
 			fieldtype: "Link",
 			options: "Brand"
