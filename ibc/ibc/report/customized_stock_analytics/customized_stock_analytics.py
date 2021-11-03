@@ -7,7 +7,7 @@ from frappe import _, scrub
 from frappe.utils import getdate, get_quarter_start, get_first_day_of_week
 from frappe.utils import get_first_day as get_first_day_of_month
 
-from erpnext.stock.report.stock_balance.stock_balance import (get_items, get_stock_ledger_entries, get_item_details)
+from erpnext.stock.report.stock_balance.stock_balance import (get_items, get_stock_ledger_entries, get_item_details, get_item_details_customized)
 from erpnext.accounts.utils import get_fiscal_year
 from six import iteritems
 from erpnext.stock.utils import is_reposting_item_valuation_in_progress
@@ -201,7 +201,7 @@ def get_data(filters):
 	data = []
 	items = get_items(filters)
 	sle = get_stock_ledger_entries(filters, items)
-	item_details = get_item_details(items, sle, filters)
+	item_details = get_item_details_customized(items, sle, filters)
 	periodic_data = get_periodic_data(sle, filters)
 	ranges = get_period_date_ranges(filters)
 
