@@ -11,8 +11,7 @@ from erpnext.accounts.utils import get_fiscal_year
 from erpnext.stock.report.stock_balance.stock_balance import (
 	get_item_details,
 	get_items,
-	get_items1,
-	get_stock_ledger_entries,get_stock_ledger_entries1
+	get_stock_ledger_entries,
 )
 from erpnext.stock.utils import is_reposting_item_valuation_in_progress
 
@@ -29,8 +28,35 @@ def execute(filters=None):
 def get_columns(filters):
 	columns = [
 		{
+			"label": _("Item"),
+			"options":"Item",
+			"fieldname": "name",
+			"fieldtype": "Link",
+			"width": 140
+		},
+		{
+			"label": _("Item Name"),
+			"options":"Item",
+			"fieldname": "item_name",
+			"fieldtype": "Link",
+			"width": 140
+		},
+		{
+			"label": _("Item Group"),
+			"options":"Item Group",
+			"fieldname": "item_group",
+			"fieldtype": "Link",
+			"width": 140
+		},
+		{
 			"label": _("Brand"),
 			"fieldname": "brand",
+			"fieldtype": "Data",
+			"width": 120
+		},
+		{
+			"label": _("UOM"),
+			"fieldname": "uom",
 			"fieldtype": "Data",
 			"width": 120
 		}]
@@ -82,8 +108,10 @@ def get_period_date_ranges(filters):
 def round_down_to_nearest_frequency(date: str, frequency: str) -> datetime.datetime:
 	"""Rounds down the date to nearest frequency unit.
 	example:
+
 	>>> round_down_to_nearest_frequency("2021-02-21", "Monthly")
 	datetime.datetime(2021, 2, 1)
+
 	>>> round_down_to_nearest_frequency("2021-08-21", "Yearly")
 	datetime.datetime(2021, 1, 1)
 	"""
@@ -165,35 +193,33 @@ def get_periodic_data(entry, filters):
 			value = d.stock_value_difference
 
 		# period-warehouse wise balance
-		periodic_data.setdefault(d.brand, {}).setdefault('balance', {}).setdefault(d.warehouse, 0.0)
-		periodic_data.setdefault(d.brand, {}).setdefault(period, {}).setdefault(d.warehouse, 0.0)
+		periodic_data.setdefault(d.item_code, {}).setdefault('balance', {}).setdefault(d.warehouse, 0.0)
+		periodic_data.setdefault(d.item_code, {}).setdefault(period, {}).setdefault(d.warehouse, 0.0)
 
-		periodic_data[d.brand]['balance'][d.warehouse] += value
-		periodic_data[d.brand][period][d.warehouse] = periodic_data[d.brand]['balance'][d.warehouse]
+		periodic_data[d.item_code]['balance'][d.warehouse] += value
+		periodic_data[d.item_code][period][d.warehouse] = periodic_data[d.item_code]['balance'][d.warehouse]
 
 	return periodic_data
 
 def get_data(filters):
 	data = []
-	brands = get_items1(filters)
-	sle = get_stock_ledger_entries1(filters, brands)
-	item_details = get_item_details(brands, sle, filters)
+	items = get_items(filters)
+	sle = get_stock_ledger_entries(filters, items)
+	item_details = get_item_details(items, sle, filters)
 	periodic_data = get_periodic_data(sle, filters)
 	ranges = get_period_date_ranges(filters)
+	item_results = frappe.db.sql("""
+	       SELECT distinct
+	               name as brand
+	               from
+	               `tabBrand`
+	           """, filters, as_dict=1)
 
-	for dummy, item_data in item_details.items():
-		row = {
+	for item_data in item_results:
+		data = {
 			"brand": item_data.brand,
 		}
-		total = 0
-		for dummy, end_date in ranges:
-			period = get_period(end_date, filters)
-			period_data = periodic_data.get(item_data.name, {}).get(period)
-			amount = sum(period_data.values()) if period_data else 0
-			row[scrub(period)] = amount
-			total += amount
-		row["total"] = total
-		data.append(row)
+
 
 	return data
 
