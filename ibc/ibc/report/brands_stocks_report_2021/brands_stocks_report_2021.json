@@ -10,15 +10,15 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "IBC",
- "modified": "2021-10-19 15:52:55.606281",
+ "modified": "2022-01-16 19:19:25.172966",
  "modified_by": "Administrator",
  "module": "Ibc",
- "name": "Brands Stocks Report",
+ "name": "Brands Stocks Report 2021",
  "owner": "Administrator",
  "prepared_report": 0,
  "query": "",
  "ref_doctype": "Brand",
- "report_name": "Brands Stocks Report",
+ "report_name": "Brands Stocks Report 2021",
  "report_type": "Script Report",
  "roles": [
   {

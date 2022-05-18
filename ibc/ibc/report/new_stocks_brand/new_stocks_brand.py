@@ -85,8 +85,9 @@ def get_item_price_qty_data(filters):
                     ifnull(`tabItem`.valuation_rate,0) as valuation_rate
                 from
                     `tabItem`
-                where tabItem.brand = %(brand)s
-                """, filters, as_dict=1)
+                where
+                `tabItem`.disabled in (0, 1)
+                """.format(conditions=conditions), filters, as_dict=1)
 
     result = []
     if item_results:

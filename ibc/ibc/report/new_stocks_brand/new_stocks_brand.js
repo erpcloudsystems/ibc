@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["New Stocks Brand 2021"] = {
+frappe.query_reports["New Stocks Brand"] = {
 	"filters": [
 		{
 			"fieldname":"from_date",
@@ -10,7 +10,8 @@ frappe.query_reports["New Stocks Brand 2021"] = {
 			"fieldtype": "Date",
 			"width": "80",
 			"reqd": 1,
-			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"default": frappe.datetime.get_today()
+			//"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
 		},
 		{
 			"fieldname":"to_date",
@@ -18,13 +19,13 @@ frappe.query_reports["New Stocks Brand 2021"] = {
 			"fieldtype": "Date",
 			"width": "80",
 			"reqd": 1,
-			"default": frappe.datetime.get_today()
+			"default": frappe.datetime.get_today(),
 		},
 		{
 			"fieldname": "brand",
 			"label": __("Brand"),
 			"fieldtype": "Link",
-			"reqd": 1,
+			"reqd": 0,
 			"options": "Brand",
 		},
 

@@ -11,6 +11,17 @@ app_color = "grey"
 app_email = "mg@erpcloud.systems"
 app_license = "MIT"
 
+
+scheduler_events = {
+ 	"hourly": [
+ 		"ibc.trigers.hourly"
+	 ],
+	 "daily": [
+ 		"ibc.trigers.daily"
+	 ]
+}
+
+
 # Includes in <head>
 # ------------------
 
