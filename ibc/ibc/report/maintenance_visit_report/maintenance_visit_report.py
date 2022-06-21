@@ -85,24 +85,23 @@ def get_item_price_qty_data(filters):
         conditions += " and `tabMaintenance Visit`.eng =%(eng)s"
     result = []
     item_results = frappe.db.sql("""
-            SELECT
-                `tabMaintenance Visit`.name as name,
-                `tabMaintenance Visit`.request_type as request_type,
-                `tabMaintenance Visit`.customer as customer,
-                `tabMaintenance Visit`.customer_name1 as customer_name1,
-                `tabMaintenance Visit`.mntc_date as mntc_date,
-                `tabMaintenance Visit`.sales_Person as sales_Person,
-                `tabMaintenance Visit`.eng as eng,
-                `tabMaintenance Visit`.eng_name as eng_name
-
-                
-            FROM
-                `tabMaintenance Visit`
-            WHERE
-                `tabMaintenance Visit`.docstatus != 2
-            {conditions}
-                
-            """.format(conditions=conditions), filters, as_dict=1)
+                                    SELECT
+                                        `tabMaintenance Visit`.name as name,
+                                        `tabMaintenance Visit`.request_type as request_type,
+                                        `tabMaintenance Visit`.customer as customer,
+                                        `tabMaintenance Visit`.customer_name1 as customer_name1,
+                                        `tabMaintenance Visit`.mntc_date as mntc_date,
+                                        `tabMaintenance Visit`.sales_Person as sales_Person,
+                                        `tabMaintenance Visit`.eng as eng,
+                                        `tabMaintenance Visit`.eng_name as eng_name
+                        
+                                        
+                                    FROM
+                                        `tabMaintenance Visit`
+                                    WHERE
+                                        `tabMaintenance Visit`.docstatus != 2
+                                    {conditions}
+                               """.format(conditions=conditions), filters, as_dict=1)
     if item_results:
         for item_dict in item_results:
             data = {
