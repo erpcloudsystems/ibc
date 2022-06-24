@@ -87,6 +87,7 @@ def get_item_price_qty_data(filters):
                     `tabItem`
                 where
                 `tabItem`.disabled in (0, 1)
+                    {conditions}
                 """.format(conditions=conditions), filters, as_dict=1)
 
     result = []
@@ -101,7 +102,7 @@ def get_item_price_qty_data(filters):
                 'valuation_rate': item_dict.valuation_rate
 
             }
-            from_date = filters.get("to_date")
+            from_date = filters.get("from_date")
             item = item_dict.item_code
 
             warehouses = frappe.db.sql("""select name as name from `tabWarehouse` where disabled = 0""", as_dict=1)
