@@ -2621,7 +2621,7 @@
    "name": "Opportunity-creator",
    "no_copy": 0,
    "non_negative": 0,
-   "options": "{{ doc.owner }}",
+   "options": "",
    "owner": "Administrator",
    "parent": null,
    "parentfield": null,
