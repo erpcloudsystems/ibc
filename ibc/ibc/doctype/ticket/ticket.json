@@ -205,6 +205,7 @@
    "label": "Create Invoice"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "sales_invoice",
    "fieldtype": "Data",
    "label": "Sales Invoice",
@@ -219,7 +220,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-07-20 17:17:20.974218",
+ "modified": "2022-07-20 17:27:20.783206",
  "modified_by": "Administrator",
  "module": "Ibc",
  "name": "Ticket",
