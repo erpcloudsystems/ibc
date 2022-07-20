@@ -31,7 +31,10 @@
   "column_break_17",
   "total_cost",
   "section_break_27",
-  "general_notes"
+  "general_notes",
+  "section_break_26",
+  "create_invoice",
+  "sales_invoice"
  ],
  "fields": [
   {
@@ -101,6 +104,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.docstatus == 0",
    "fieldname": "section_break_7",
    "fieldtype": "Section Break",
    "label": "S/N"
@@ -108,7 +112,8 @@
   {
    "fieldname": "serial_no",
    "fieldtype": "Data",
-   "label": "Serial No"
+   "label": "Serial No",
+   "no_copy": 1
   },
   {
    "fieldname": "column_break_9",
@@ -120,7 +125,6 @@
    "options": "<br>"
   },
   {
-   "depends_on": "eval:doc.docstatus == 0",
    "fieldname": "get_serial_details",
    "fieldtype": "Button",
    "label": "Get Serial Details"
@@ -191,12 +195,30 @@
    "fieldname": "installation_engineer",
    "fieldtype": "Data",
    "label": "Installation Engineer"
+  },
+  {
+   "bold": 1,
+   "depends_on": "eval:!doc.sales_invoice && doc.docstatus == 1",
+   "fieldname": "create_invoice",
+   "fieldtype": "Button",
+   "label": "Create Invoice"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Data",
+   "label": "Sales Invoice",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_26",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-20 15:47:07.422901",
+ "modified": "2022-07-17 17:20:31.386801",
  "modified_by": "Administrator",
  "module": "Ibc",
  "name": "Ticket",

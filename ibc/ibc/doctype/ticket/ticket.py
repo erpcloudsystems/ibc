@@ -72,3 +72,32 @@ class Ticket(Document):
                 y.cost = 0
 
             #self.save()
+
+    @frappe.whitelist()
+    def create_invoice(self):
+        items = [
+            {
+                "doctype": "Sales Invoice Item",
+                "item_code": "9053",
+                "qty": 1,
+                "rate": self.total_cost,
+                "uom": "Unit",
+                "description": self.general_notes,
+                "conversion_factor": 1,
+            }
+        ]
+
+        new_doc = frappe.get_doc({
+            "doctype": "Sales Invoice",
+            "ticket": self.name,
+            "customer": self.customer,
+            "due_date": self.posting_date,
+            "posting_date": self.posting_date,
+            "currency": "EGP",
+            "items": items,
+        })
+        new_doc.insert(ignore_permissions=True)
+        self.sales_invoice = new_doc.name
+        self.save()
+        self.reload()
+        frappe.msgprint(" Sales Invoice " + "<a href=/app/sales-invoice/" + new_doc.name + ">" + new_doc.name + "</a>" + " Created Successfully ")
