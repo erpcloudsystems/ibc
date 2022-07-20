@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
+import json, ast, requests
+from requests_oauthlib import OAuth1
 
 frappe.whitelist()
 def hourly():
@@ -18,11 +20,9 @@ def update_woocommerce():
         ## Get Single Values from Ecs Woocommerce seetings page
         price_list = frappe.db.get_single_value('Ecs Woocommerce', 'price_list')
         woocommerce_user_key = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_user_key')
-        erpnext_user_key = frappe.db.get_single_value('Ecs Woocommerce', 'erpnext_user_key')
-        woocommerce_link = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_link')
         woocommerce_user_secret = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_user_secret')
-        erpnext_user_secret = frappe.db.get_single_value('Ecs Woocommerce', 'erpnext_user_secret')
         woocommerce_create = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_create')
+        system_url = frappe.db.get_single_value('Ecs Woocommerce', 'system_url')
 
         ## Get Values From Website Item and Item
         website_item_list = frappe.db.get_list('Website Item', filters={'published': 1},
@@ -44,7 +44,7 @@ def update_woocommerce():
             permalink = "https://example.com/product" + x.web_item_name
             brand = x.brand
             item_group = x.item_group
-            image = "https://ibc.erpcloud.systems" + x.website_image
+            image = system_url + x.website_image
             date_created = x.creation
             description = x.web_long_description
             short_description = x.description
@@ -79,5 +79,5 @@ def update_woocommerce():
                        "Content-Length": "376"
                        }
             response = requests.post(
-                url="https://demo.nv-host.com/ibcegypt/wp-json/wc/v3/products/" + str(woocommerce_id),
+                url=woocommerce_create + str(woocommerce_id),
                 data=json.dumps(data), auth=headeroauth, headers=headers)

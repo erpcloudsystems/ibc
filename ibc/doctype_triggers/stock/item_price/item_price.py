@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
+import json, ast, requests
+from requests_oauthlib import OAuth1
 
 
 @frappe.whitelist()
@@ -22,18 +24,16 @@ def validate(doc, method=None):
         item = frappe.get_doc("Website Item", {'item_code': doc.item_code})
         if item.woocommerce_id:
             woocommerce_user_key = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_user_key')
-            erpnext_user_key = frappe.db.get_single_value('Ecs Woocommerce', 'erpnext_user_key')
-            woocommerce_link = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_link')
             woocommerce_user_secret = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_user_secret')
-            erpnext_user_secret = frappe.db.get_single_value('Ecs Woocommerce', 'erpnext_user_secret')
             woocommerce_create = frappe.db.get_single_value('Ecs Woocommerce', 'woocommerce_create')
+            system_url = frappe.db.get_single_value('Ecs Woocommerce', 'system_url')
 
             sku = item.item_code
             item_name = item.web_item_name
             permalink = "https://example.com/product" + item.web_item_name
             brand = item.brand
             item_group = item.item_group
-            image = "https://ibc.erpcloud.systems" + item.website_image
+            image = system_url + item.website_image
             date_created = item.creation
             description = item.web_long_description
             short_description = item.description
@@ -68,7 +68,7 @@ def validate(doc, method=None):
                        "Content-Length": "376"
                        }
             response = requests.post(
-                url="https://demo.nv-host.com/ibcegypt/wp-json/wc/v3/products/" + str(woocommerce_id),
+                url=woocommerce_create + str(woocommerce_id),
                 data=json.dumps(data), auth=headeroauth, headers=headers)
 
 
