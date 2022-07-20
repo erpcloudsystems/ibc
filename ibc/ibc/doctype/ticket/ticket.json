@@ -171,7 +171,7 @@
   {
    "fieldname": "section_break_27",
    "fieldtype": "Section Break",
-   "label": "Notes"
+   "label": "Ticket Notes"
   },
   {
    "fieldname": "general_notes",
@@ -219,7 +219,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-07-20 16:39:38.434623",
+ "modified": "2022-07-20 17:17:20.974218",
  "modified_by": "Administrator",
  "module": "Ibc",
  "name": "Ticket",
