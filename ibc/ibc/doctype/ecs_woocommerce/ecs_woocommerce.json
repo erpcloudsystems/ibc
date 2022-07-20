@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-07-20 10:35:21.127938",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "price_list",
+  "woocommerce_user_key",
+  "woocommerce_user_secret",
+  "system_url",
+  "column_break_4",
+  "woocommerce_link",
+  "woocommerce_create",
+  "woocommerce_create_category"
+ ],
+ "fields": [
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "Price List"
+  },
+  {
+   "fieldname": "woocommerce_user_key",
+   "fieldtype": "Data",
+   "label": "Woocommerce User Key"
+  },
+  {
+   "fieldname": "woocommerce_user_secret",
+   "fieldtype": "Data",
+   "label": "Woocommerce User Secret"
+  },
+  {
+   "fieldname": "system_url",
+   "fieldtype": "Data",
+   "label": "System URL"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "woocommerce_link",
+   "fieldtype": "Data",
+   "label": "Woocommerce Link"
+  },
+  {
+   "fieldname": "woocommerce_create",
+   "fieldtype": "Data",
+   "label": "Woocommerce Create Product"
+  },
+  {
+   "fieldname": "woocommerce_create_category",
+   "fieldtype": "Data",
+   "label": "Woocommerce Create Category"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-07-20 16:29:14.315288",
+ "modified_by": "Administrator",
+ "module": "Ibc",
+ "name": "Ecs Woocommerce",
+ "nsm_parent_field": "parent_ecs_woocommerce_settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
