@@ -84,12 +84,17 @@ class Ticket(Document):
                 "uom": "Unit",
                 "description": self.general_notes,
                 "conversion_factor": 1,
+                "income_account": "ايرادات الصيانه - IBC",
+                "cost_center": "فرع الصيانه -Maintenance - IBC",
             }
         ]
 
         new_doc = frappe.get_doc({
             "doctype": "Sales Invoice",
             "ticket": self.name,
+            "sales_person": "Maintenance",
+            "sales_person_1": "Maintenance",
+            "c_sales_person_1": "Maintenance",
             "customer": self.customer,
             "due_date": self.posting_date,
             "posting_date": self.posting_date,
