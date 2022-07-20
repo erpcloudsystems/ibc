@@ -92,6 +92,7 @@ class Ticket(Document):
         new_doc = frappe.get_doc({
             "doctype": "Sales Invoice",
             "ticket": self.name,
+            "cost_center": "فرع الصيانه -Maintenance - IBC",
             "sales_person": "Maintenance",
             "sales_person_1": "Maintenance",
             "c_sales_person_1": "Maintenance",
