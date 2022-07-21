@@ -34,8 +34,7 @@
   "general_notes",
   "section_break_26",
   "create_invoice",
-  "sales_invoice",
-  "amended_from"
+  "sales_invoice"
  ],
  "fields": [
   {
@@ -219,8 +218,13 @@
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2022-07-20 17:27:20.783206",
+ "links": [
+  {
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "ticket"
+  }
+ ],
+ "modified": "2022-07-21 11:32:29.882916",
  "modified_by": "Administrator",
  "module": "Ibc",
  "name": "Ticket",
